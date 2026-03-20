@@ -33,8 +33,11 @@ export default function DashboardPage() {
       if (e instanceof ApiError) {
         setError(e.message);
       } else if (e instanceof TypeError) {
+        const remote = API_ORIGIN.startsWith("https://");
         setError(
-          `Cannot reach API at ${API_ORIGIN}. Start the backend and set NEXT_PUBLIC_API_URL in .env.local to the same host:port as uvicorn (e.g. http://127.0.0.1:8080). Restart npm run dev after editing .env.local.`,
+          remote
+            ? `Cannot reach ${API_ORIGIN}. Open that URL in a new tab (wait if Render was sleeping). Redeploy the API after pulling latest CORS changes. If you use a non-vercel.app domain, set CORS_ORIGINS on Render to that exact https origin. Check DevTools → Network for blocked (CORS) requests.`
+            : `Cannot reach API at ${API_ORIGIN}. Start uvicorn and set NEXT_PUBLIC_API_URL in .env.local to match (e.g. http://127.0.0.1:8080). Restart npm run dev after editing .env.local.`,
         );
       } else {
         setError("Failed to load tasks");
