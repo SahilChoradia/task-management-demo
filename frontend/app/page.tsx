@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { TaskForm } from "@/components/TaskForm";
 import { TaskList } from "@/components/TaskList";
 import {
+  API_ORIGIN,
   ApiError,
   type StatusFilter,
   type Task,
@@ -29,7 +30,15 @@ export default function DashboardPage() {
       const data = await fetchTasks("all");
       setAllTasks(data);
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Failed to load tasks");
+      if (e instanceof ApiError) {
+        setError(e.message);
+      } else if (e instanceof TypeError) {
+        setError(
+          `Cannot reach API at ${API_ORIGIN}. Start the backend and set NEXT_PUBLIC_API_URL in .env.local to the same host:port as uvicorn (e.g. http://127.0.0.1:8080). Restart npm run dev after editing .env.local.`,
+        );
+      } else {
+        setError("Failed to load tasks");
+      }
       setAllTasks([]);
     } finally {
       setLoading(false);

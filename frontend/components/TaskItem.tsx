@@ -63,7 +63,6 @@ export function TaskItem({
     if (!window.confirm("Delete this task?")) return;
     setDeleting(true);
     try {
-      // Ensure string UUID (API should send string; coerce for safety)
       await onDelete(String(task.id));
     } finally {
       setDeleting(false);

@@ -1,4 +1,4 @@
-const API_BASE =
+export const API_ORIGIN =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export type TaskStatus = "pending" | "in_progress" | "completed";
@@ -41,7 +41,7 @@ export class ApiError extends Error {
 }
 
 function tasksBaseUrl(): string {
-  return `${API_BASE.replace(/\/$/, "")}/api/tasks`;
+  return `${API_ORIGIN.replace(/\/$/, "")}/api/tasks`;
 }
 
 async function parseErrorDetail(res: Response): Promise<string> {
@@ -60,7 +60,6 @@ async function parseErrorDetail(res: Response): Promise<string> {
     }
     if (data.detail !== undefined) return JSON.stringify(data.detail);
   } catch {
-    /* not JSON */
   }
   return text || res.statusText || "Request failed";
 }
@@ -119,6 +118,5 @@ export async function deleteTask(id: string): Promise<void> {
     headers: { Accept: "application/json" },
     cache: "no-store",
   });
-  // Backend returns 200 + JSON (avoids empty-body / 204 quirks in some environments)
   await handleJson<{ deleted?: boolean }>(res);
 }

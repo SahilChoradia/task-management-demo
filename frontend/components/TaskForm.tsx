@@ -33,7 +33,6 @@ export function TaskForm({ onSubmit, disabled }: TaskFormProps) {
       setDescription("");
       setPriority("medium");
     } catch {
-      /* parent handles / displays error */
     } finally {
       setSubmitting(false);
     }
