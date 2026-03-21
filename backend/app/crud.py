@@ -57,7 +57,6 @@ async def update_task(
 
 
 async def delete_task(db: AsyncSession, task_id: uuid.UUID) -> bool:
-    """Use Core DELETE for reliable async SQLite behavior (ORM delete can fail silently)."""
     sid = str(task_id)
     result = await db.execute(delete(Task).where(Task.id == sid))
     await db.commit()

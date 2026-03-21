@@ -67,7 +67,6 @@ async def delete_task(
     task_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
 ) -> dict[str, bool | str]:
-    """Return JSON (not 204) so browsers and fetch() handle the response consistently."""
     deleted = await crud.delete_task(db, task_id)
     if not deleted:
         raise HTTPException(
