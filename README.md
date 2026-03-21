@@ -14,8 +14,16 @@ On Windows, if `pip` is not recognized, use **`python -m pip`** (Python’s inst
 ```bash
 cd backend
 python -m pip install -r requirements.txt
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+python -m uvicorn app.main:app --reload --port 8000
 ```
+
+Shortest from `backend` on **port 8080** (default in `dev.cmd`):
+
+```powershell
+.\dev.cmd
+```
+
+Other port: `.\dev.cmd 8000`. Uvicorn already binds to `127.0.0.1` by default.
 
 **PowerShell helper** (same folder as `requirements.txt`):
 
@@ -31,6 +39,32 @@ If `python` is not recognized, install Python from [python.org](https://www.pyth
 
 **Optional:** so `pip` and `uvicorn` work without `python -m`, add your Python **Scripts** folder to PATH (pip warns with the exact path), e.g.  
 `%LocalAppData%\Python\pythoncore-3.14-64\Scripts`.
+
+### `No module named uvicorn` (or tasks never create / always fail)
+
+You likely have **more than one Python** on Windows (e.g. `...\Python314\python.exe` from python.org **and** another under `%LocalAppData%\Python\...`). Packages install into **whichever** `python` you used — the other copy won’t see them.
+
+**Fix:** use the **same** interpreter for install and run:
+
+```powershell
+cd D:\internship-project\backend
+# See which python runs:
+where.exe python
+python --version
+
+python -m pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+If `python -m uvicorn` still fails, install with the **full path** to the `.exe` you intend to use, then run with that same path:
+
+```powershell
+& "C:\Users\DELL G3 GAMING\AppData\Local\Programs\Python\Python314\python.exe" -m pip install -r requirements.txt
+cd D:\internship-project\backend
+& "C:\Users\DELL G3 GAMING\AppData\Local\Programs\Python\Python314\python.exe" -m uvicorn app.main:app --reload --port 8000
+```
+
+**Why tasks don’t create:** the **API must be running** on the URL in `frontend/.env.local` (default `http://localhost:8000`). If uvicorn isn’t running or the port is wrong, the UI will show an error and POST `/api/tasks/` never succeeds.
 
 API: [http://localhost:8000](http://localhost:8000)  
 Docs: [http://localhost:8000/docs](http://localhost:8000/docs)  
@@ -56,7 +90,7 @@ Usually **port 8000 is in use** or **reserved** (Hyper-V / WSL / excluded ranges
 
    ```powershell
    cd backend
-   python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8080
+   python -m uvicorn app.main:app --reload --port 8080
    ```
 
    In `frontend/.env.local`:
@@ -94,6 +128,13 @@ Base path: `/api/tasks`
 | GET | `/api/tasks/{id}` | Get one task |
 | PUT | `/api/tasks/{id}` | Update task |
 | DELETE | `/api/tasks/{id}` | Delete task |
+
+## Deploy (Vercel + Render)
+
+Step-by-step guide: **[`docs/DEPLOY_RENDER_VERCEL.md`](docs/DEPLOY_RENDER_VERCEL.md)**  
+**Production API (Render):** [`https://task-management-demo-1dhc.onrender.com`](https://task-management-demo-1dhc.onrender.com) — set in **`frontend/.env.production`** for Vercel builds.  
+**Render start command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`  
+On Render, set **`CORS_ORIGINS`** to your Vercel `https://` URLs (comma-separated).
 
 ## Project layout
 
